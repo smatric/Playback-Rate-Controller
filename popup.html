@@ -1,0 +1,61 @@
+<!doctype html>
+<html>
+<head>
+    <title>Playback Rate Controller's Popup</title>
+    <style>
+        body {
+            font-size: 100%;
+            max-width: 220px;
+            overflow: hidden;
+        }
+        .prc-short-massage {
+            white-space: nowrap;
+            font-size: 12px;
+            color: #cf3839;
+        }
+        .hidden {
+            display: none;
+        }
+        #prc-controls {
+            width: 100%;
+            border-spacing: 5px;
+            border-collapse: separate;
+        }
+        .prc-video-label {
+            display: inline-block;
+            font-size:11px;
+            color: #369;
+            white-space: nowrap;
+            margin-right: 20px;
+        }
+        .prc-control-btn {
+            padding: 3px 10px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 2px;
+            border: 1px solid #aaa;
+            background: #eee;
+            font-family: "Lucida Console", Monaco, monospace;
+        }
+        .prc-control-rate {
+            display: inline-block;
+            font-size: 11px;
+            width: 50px;
+            color: #777;
+            text-align: center;
+            font-family: "Lucida Console", Monaco, monospace;
+        }
+    </style>
+
+    <script src="popup.js"></script>
+</head>
+<body>
+    <div id="prc-popup-no-content">
+        <div class="prc-short-massage">No audio/video content found</div>
+    </div>
+
+    <div id="prc-popup-content" class="hidden">
+
+    </div>
+</body>
+</html>
