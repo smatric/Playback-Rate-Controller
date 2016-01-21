@@ -9,37 +9,41 @@ function getAudioElements() {
 function summary(sendResponse) {
     var videos = getVideoElements();
     var audios = getAudioElements();
-    var playbackRates = [];
-    var pauseStates = [];
-    var types = [];
+    var playbackRate = null;
 
-    videos.forEach(function(video) {
-        playbackRates.push(video.playbackRate);
-        pauseStates.push(video.paused);
-        types.push('video');
-    });
+    if (videos.length > 0) {
+        playbackRate = videos[0].playbackRate;
+    }
+    else if (audios.length > 0) {
+        playbackRate = audios[0].playbackRate;
+    }
 
-    audios.forEach(function(audios) {
-        playbackRates.push(audios.playbackRate);
-        pauseStates.push(audios.paused);
-        types.push('audio');
-    });
+    if (playbackRate !== null) {
+        sendResponse({
+            status: "success",
+            playbackRate: playbackRate
+        });
+    }
+}
 
-    sendResponse({ status: "success", numOfVideos: videos.length, playbackRates: playbackRates, pauseStates: pauseStates, types: types });
+function setElementPlaybackRate(el, newPlaybackRate) {
+    el.playbackRate = newPlaybackRate;
 }
 
 function setPlaybackRate(request, sendResponse) {
     var videos = getVideoElements();
     var audios = getAudioElements();
+    var newPlaybackRate = request.newPlaybackRate;
 
-    if (request.itemPos < videos.length) {
-        videos[request.itemPos].playbackRate = request.newPlaybackRate;
-    }
-    else {
-        audios[request.itemPos - videos.length].playbackRate = request.newPlaybackRate;
-    }
+    videos.forEach(function(video) {
+        setElementPlaybackRate(video, newPlaybackRate);
+    });
 
-    sendResponse({ status: "success" });
+    audios.forEach(function(audio) {
+        setElementPlaybackRate(audio, newPlaybackRate);
+    });
+
+    summary(sendResponse);
 }
 
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {

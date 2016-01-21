@@ -4,46 +4,102 @@
     <title>Playback Rate Controller's Popup</title>
     <style>
         body {
-            font-size: 100%;
-            max-width: 220px;
+            font-size: 16px;
+            width: 170px;
+            height: 135px;
             overflow: hidden;
+            padding: 10px 5px;
+        }
+        .hidden {
+            display: none;
         }
         .prc-short-massage {
             white-space: nowrap;
             font-size: 12px;
             color: #cf3839;
+            padding-top: 50px;
         }
-        .hidden {
-            display: none;
+        .prc-top-controls {
+            display: flex;
         }
-        #prc-controls {
-            width: 100%;
-            border-spacing: 5px;
-            border-collapse: separate;
-        }
-        .prc-video-label {
-            display: inline-block;
-            font-size:11px;
-            color: #369;
-            white-space: nowrap;
-            margin-right: 20px;
+        .prc-top-controls-rate {
+            flex-grow: 1;
+            text-align: center;
+            line-height: 0.95em;
+            padding-top:7px;
+            color:#467DB3;
         }
         .prc-control-btn {
             padding: 3px 10px;
-            font-size: 16px;
             cursor: pointer;
-            border-radius: 2px;
+            border-radius: 4px;
             border: 1px solid #aaa;
             background: #eee;
+        }
+        .prc-control-btn:focus {
+            outline: -webkit-focus-ring-color auto 0px;
+        }
+        .prc-control-faster-slower-btn {
+            height: 40px;
+            width: 40px;
+            font-size: 24px;
+            line-height: 1em;
+            font-weight: bold;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.4),1px 1px 2px rgba(0,0,0,0.2);
+            color: white;
             font-family: "Lucida Console", Monaco, monospace;
+        }
+        .prc-control-faster-slower-btn > span{
+            position: relative;
+            top: -2px;
+        }
+        #prc-slower {
+            background: linear-gradient(to bottom, #B1E613 0%, #7CBC08 100%);
+            border-color: #8EAC27;
+        }
+        #prc-faster {
+            background: linear-gradient(to bottom, #F14545 0%, #CE1B23 100%);
+            border-color: #B5191D;
         }
         .prc-control-rate {
             display: inline-block;
-            font-size: 11px;
+            font-size: 22px;
             width: 50px;
-            color: #777;
             text-align: center;
-            font-family: "Lucida Console", Monaco, monospace;
+        }
+        .prc-control-rate-label {
+            font-size: 9px;
+        }
+        .prc-extra-controls {
+            display: flex;
+            padding-top: 20px;
+        }
+        .prc-extra-controls-normal {
+            flex-grow: 1;
+            padding: 0 10px;
+        }
+        .prc-control-rate-btn {
+            border-radius: 3px;
+            font-size: 10px;
+            width: 100%;
+            padding: 12px 5px 8px 5px;
+            border: 1px solid #ccc;
+            background-color: #f0f0f0;
+            color: #999;
+            font-weight: bold;
+            transition: background .5s, color .5s;
+        }
+        .prc-control-rate-btn:hover {
+            color:#333;
+            background-color: #f5f5f5;
+            transition: background .5s, color .5s;
+        }
+        #prc-rate-1 {
+            padding: 30px 5px;
+            font-size: 13px;
+        }
+        .prc-extra-controls-slow-top, .prc-extra-controls-fast-top {
+            padding-bottom: 10px;
         }
     </style>
 
@@ -55,7 +111,40 @@
     </div>
 
     <div id="prc-popup-content" class="hidden">
+        <div class="prc-top-controls">
+            <div class="prc-top-controls-slower">
+                <button id="prc-slower" class="prc-control-btn prc-control-faster-slower-btn"><span>-</span></button>
+            </div>
+            <div class="prc-top-controls-rate">
+                <span id="prc-rate" class="prc-control-rate"></span><br>
+                <span class="prc-control-rate-label">Playback Rate</span>
+            </div>
+            <div class="prc-top-controls-slower">
+                <button id="prc-faster" class="prc-control-btn prc-control-faster-slower-btn" autofocus><span>+</span></button>
+            </div>
+        </div>
 
+        <div class="prc-extra-controls">
+            <div class="prc-extra-controls-slow">
+                <div class="prc-extra-controls-slow-top">
+                    <button id="prc-rate-05" class="prc-control-btn prc-control-rate-btn"> 0.5x </button>
+                </div>
+                <div class="prc-extra-controls-slow-bottom">
+                    <button id="prc-rate-08" class="prc-control-btn prc-control-rate-btn"> 0.8x </button>
+                </div>
+            </div>
+            <div class="prc-extra-controls-normal">
+                <button id="prc-rate-1" class="prc-control-btn prc-control-rate-btn"> 1.0x </button>
+            </div>
+            <div class="prc-extra-controls-fast">
+                <div class="prc-extra-controls-fast-top">
+                    <button id="prc-rate-15" class="prc-control-btn prc-control-rate-btn"> 1.5x </button>
+                </div>
+                <div class="prc-extra-controls-fast-bottom">
+                    <button id="prc-rate-2" class="prc-control-btn prc-control-rate-btn"> 2.0x </button>
+                </div>
+            </div>
+        </div>
     </div>
 </body>
 </html>

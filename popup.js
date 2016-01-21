@@ -1,21 +1,17 @@
 var PRCPopup = {
-    MAX_PLAYBACK_RATE: 3.0,
+    MAX_PLAYBACK_RATE: 4.0,
     MIN_PLAYBACK_RATE: 0.1,
     PLAYBACK_RATE_STEP: 0.1,
     SHOW_DECIMAL_PLACES: 1,
     CSS_CLASS_HIDDEN: 'hidden',
 
 
-    playbackRates: [],
-    pauseStates: [],
-    types: [],
+    playbackRate: null,
 
     reset: function() {
         var me = this;
 
-        me.playbackRates = [];
-        me.pauseStates   = [];
-        me.types         = [];
+        me.playbackRate = null;
     },
 
     addClass: function(el, cssClass) {
@@ -49,15 +45,13 @@ var PRCPopup = {
         me.addClass(el, me.CSS_CLASS_HIDDEN);
     },
 
-    renderContent: function(content) {
+    showContent: function() {
         var me = this;
         var messageEl = document.getElementById('prc-popup-no-content');
         var contentEl = document.getElementById('prc-popup-content');
 
         me.hideEl(messageEl);
         me.showEl(contentEl);
-
-        contentEl.innerHTML = content;
     },
 
     showNoContentMessage: function() {
@@ -69,107 +63,107 @@ var PRCPopup = {
         me.hideEl(contentEl);
     },
 
-    renderRate: function(pos) {
+    renderRate: function() {
         var me = this;
 
-        document.getElementById('prc-rate-' + pos).innerHTML = me.formatRate(pos);
+        document.getElementById('prc-rate').innerHTML = me.formatRate(me.playbackRate);
     },
 
-    formatRate: function(pos) {
+    formatRate: function(rate) {
         var me = this;
 
-        return me.playbackRates[pos].toFixed(me.SHOW_DECIMAL_PLACES) + 'x';
+        return rate.toFixed(me.SHOW_DECIMAL_PLACES) + 'x';
     },
 
     addCallbacks: function() {
         var me = this;
 
-        me.playbackRates.forEach(function (rate, pos) {
-            document.getElementById('prc-slower-' + pos).addEventListener('click', function() {
-                me.slower(pos);
-            });
+        document.getElementById('prc-slower').addEventListener('click', function() {
+            me.slower();
+        });
 
-            document.getElementById('prc-faster-' + pos).addEventListener('click', function() {
-                me.faster(pos);
-            });
+        document.getElementById('prc-faster').addEventListener('click', function() {
+            me.faster();
+        });
+
+        document.getElementById('prc-rate-05').addEventListener('click', function() {
+            me.setPlaybackRate(0.5);
+        });
+
+        document.getElementById('prc-rate-08').addEventListener('click', function() {
+            me.setPlaybackRate(0.8);
+        });
+
+        document.getElementById('prc-rate-1').addEventListener('click', function() {
+            me.setPlaybackRate(1.0);
+        });
+
+        document.getElementById('prc-rate-15').addEventListener('click', function() {
+            me.setPlaybackRate(1.5);
+        });
+
+        document.getElementById('prc-rate-2').addEventListener('click', function() {
+            me.setPlaybackRate(2.0);
         });
     },
 
-    renderComponent: function() {
-        var me = this;
-
-        if (me.playbackRates.length === 0) {
-            return;
-        }
-
-        var html = '<table id="prc-controls"><tbody>';
-
-        me.playbackRates.forEach(function (rate, pos) {
-            html += '<tr>';
-
-            if (me.playbackRates.length > 1) {
-                html += '<td><span class="prc-video-label">' + me.types[pos] + ' ' + (pos + 1) + ': </span></td>';
-            }
-
-            html += '<td><button id="prc-slower-' + pos + '" class="prc-control-btn"> - </button></td>';
-            html += '<td><span id="prc-rate-' + pos + '" class="prc-control-rate">' + me.formatRate(pos) + '</span></td>';
-            html += '<td><button id="prc-faster-' + pos + '" class="prc-control-btn"> + </button></td>';
-
-            html += '</tr>';
-        });
-
-        html += '</tbody></table>';
-
-        me.renderContent(html);
-        me.addCallbacks();
-    },
-
-    setPlaybackRate: function(pos) {
+    updatePlaybackRate: function() {
         var me = this;
 
         chrome.tabs.getSelected(null, function(tab) {
-            chrome.tabs.sendMessage(tab.id, { type: "prc-set-playback-rate", itemPos: pos, newPlaybackRate: me.playbackRates[pos] }, function(response) {
+            var options = {
+                type: "prc-set-playback-rate",
+                newPlaybackRate: me.playbackRate
+            };
+
+            chrome.tabs.sendMessage(tab.id, options, function(response) {
                 if (response.status === 'success') {
-                    me.renderRate(pos);
+                    me.playbackRate = response.playbackRate;
+                    me.renderRate();
                 }
             });
         });
     },
 
-    faster: function(pos) {
+    faster: function() {
         var me = this;
 
-        if (me.playbackRates[pos] < me.MAX_PLAYBACK_RATE) {
-            me.playbackRates[pos] = Math.round((me.playbackRates[pos] + me.PLAYBACK_RATE_STEP) * 10) / 10.0;
+        if (me.playbackRate < me.MAX_PLAYBACK_RATE) {
+            me.playbackRate = Math.round((me.playbackRate + me.PLAYBACK_RATE_STEP) * 10) / 10.0;
 
-            me.setPlaybackRate(pos)
+            me.updatePlaybackRate()
         }
     },
 
-    slower: function(pos) {
+    slower: function() {
         var me = this;
 
-        if (me.playbackRates[pos] > me.MIN_PLAYBACK_RATE) {
-            me.playbackRates[pos] = Math.round((me.playbackRates[pos] - me.PLAYBACK_RATE_STEP) * 10) / 10.0;
+        if (me.playbackRate > me.MIN_PLAYBACK_RATE) {
+            me.playbackRate = Math.round((me.playbackRate - me.PLAYBACK_RATE_STEP) * 10) / 10.0;
 
-            me.setPlaybackRate(pos)
+            me.updatePlaybackRate()
         }
+    },
+
+    setPlaybackRate: function(newPlaybackRate) {
+        var me = this;
+
+        me.playbackRate = newPlaybackRate;
+        me.updatePlaybackRate();
     },
 
     checkForPlaybackResources: function() {
         var me = this;
 
-        me.showNoContentMessage();
         me.reset();
+        me.showNoContentMessage();
 
         chrome.tabs.getSelected(null, function(tab) {
             chrome.tabs.sendMessage(tab.id, { type: "prc-get-summary" }, function(response) {
                 if (response && response.status === 'success') {
-                    me.playbackRates = response.playbackRates;
-                    me.pauseStates   = response.pauseStates;
-                    me.types         = response.types;
-
-                    me.renderComponent();
+                    me.playbackRate = response.playbackRate;
+                    me.showContent();
+                    me.renderRate();
                 }
             });
         });
@@ -179,6 +173,7 @@ var PRCPopup = {
         var me = this;
 
         me.checkForPlaybackResources();
+        me.addCallbacks();
     }
 };
 
