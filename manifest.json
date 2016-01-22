@@ -4,7 +4,7 @@
   "name": "Playback Rate Controller",
   "short_name": "PRC",
   "description": "PRC allows changing video and audio playback rate giving you full control over speed with which your browser plays HTML5 media.",
-  "version": "1.2.2",
+  "version": "1.2.3",
 
   "icons": {
     "16":  "icon-16x16.png",
