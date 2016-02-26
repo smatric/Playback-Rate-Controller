@@ -26,11 +26,9 @@ var PRCPopup = {
     removeClass: function(el, cssClass) {
         var elClasses = el.className.split(' ');
 
-        elClasses.filter(function(elClass) {
+        el.className = elClasses.filter(function(elClass) {
             return elClass != cssClass;
         });
-
-        el.className = elClasses;
     },
 
     showEl: function(el) {
