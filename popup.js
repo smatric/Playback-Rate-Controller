@@ -1,178 +1,118 @@
-var PRCPopup = {
-    MAX_PLAYBACK_RATE: 4.0,
-    MIN_PLAYBACK_RATE: 0.1,
-    PLAYBACK_RATE_STEP: 0.1,
-    SHOW_DECIMAL_PLACES: 1,
-    CSS_CLASS_HIDDEN: 'hidden',
+const MAX_PLAYBACK_RATE = 64.0
+const MIN_PLAYBACK_RATE = 0.1
+const PLAYBACK_RATE_STEP = 0.1
+const SHOW_DECIMAL_PLACES = 1
+const CSS_CLASS_HIDDEN = 'hidden'
 
+let playbackRate = null
 
-    playbackRate: null,
+function reset() {
+    playbackRate = null
+}
 
-    reset: function() {
-        var me = this;
+function showEl(el) {
+    el.classList.remove(CSS_CLASS_HIDDEN)
+}
 
-        me.playbackRate = null;
-    },
+function hideEl(el) {
+    el.classList.add(CSS_CLASS_HIDDEN)
+}
 
-    addClass: function(el, cssClass) {
-        var me = this;
+function showContent() {
+    var messageEl = document.getElementById('prc-popup-no-content')
+    var contentEl = document.getElementById('prc-popup-content')
 
-        // Avoid duplicate classes
-        me.removeClass(el, cssClass);
+    hideEl(messageEl)
+    showEl(contentEl)
+}
 
-        el.className += ' ' + cssClass;
-    },
+function showNoContentMessage() {
+    var messageEl = document.getElementById('prc-popup-no-content')
+    var contentEl = document.getElementById('prc-popup-content')
 
-    removeClass: function(el, cssClass) {
-        var elClasses = el.className.split(' ');
+    showEl(messageEl)
+    hideEl(contentEl)
+}
 
-        el.className = elClasses.filter(function(elClass) {
-            return elClass != cssClass;
-        });
-    },
+function renderRate() {
+    document.getElementById('prc-rate').innerHTML = formatRate(playbackRate)
+}
 
-    showEl: function(el) {
-        var me = this;
+function setSRateSlider() {
+    document.getElementById('prc-rate-slider').value = playbackRate
+}
 
-        me.removeClass(el, me.CSS_CLASS_HIDDEN);
-    },
+function formatRate(rate) {
+    return rate.toFixed(SHOW_DECIMAL_PLACES) + 'x'
+}
 
-    hideEl: function(el) {
-        var me = this;
+function addCallbacks() {
+    document.getElementById('prc-slower').addEventListener('click', slower)
+    document.getElementById('prc-faster').addEventListener('click', faster)
+    document.getElementById('prc-rate-05').addEventListener('click', () => setPlaybackRate(0.5))
+    document.getElementById('prc-rate-08').addEventListener('click', () => setPlaybackRate(0.8))
+    document.getElementById('prc-rate-1').addEventListener('click', () => setPlaybackRate(1.0))
+    document.getElementById('prc-rate-15').addEventListener('click', () => setPlaybackRate(1.5))
+    document.getElementById('prc-rate-2').addEventListener('click', () => setPlaybackRate(2.0))
+    document.getElementById('prc-rate-slider').addEventListener('input', e => setPlaybackRate(e.target.value))
+}
 
-        me.addClass(el, me.CSS_CLASS_HIDDEN);
-    },
-
-    showContent: function() {
-        var me = this;
-        var messageEl = document.getElementById('prc-popup-no-content');
-        var contentEl = document.getElementById('prc-popup-content');
-
-        me.hideEl(messageEl);
-        me.showEl(contentEl);
-    },
-
-    showNoContentMessage: function() {
-        var me = this;
-        var messageEl = document.getElementById('prc-popup-no-content');
-        var contentEl = document.getElementById('prc-popup-content');
-
-        me.showEl(messageEl);
-        me.hideEl(contentEl);
-    },
-
-    renderRate: function() {
-        var me = this;
-
-        document.getElementById('prc-rate').innerHTML = me.formatRate(me.playbackRate);
-    },
-
-    formatRate: function(rate) {
-        var me = this;
-
-        return rate.toFixed(me.SHOW_DECIMAL_PLACES) + 'x';
-    },
-
-    addCallbacks: function() {
-        var me = this;
-
-        document.getElementById('prc-slower').addEventListener('click', function() {
-            me.slower();
-        });
-
-        document.getElementById('prc-faster').addEventListener('click', function() {
-            me.faster();
-        });
-
-        document.getElementById('prc-rate-05').addEventListener('click', function() {
-            me.setPlaybackRate(0.5);
-        });
-
-        document.getElementById('prc-rate-08').addEventListener('click', function() {
-            me.setPlaybackRate(0.8);
-        });
-
-        document.getElementById('prc-rate-1').addEventListener('click', function() {
-            me.setPlaybackRate(1.0);
-        });
-
-        document.getElementById('prc-rate-15').addEventListener('click', function() {
-            me.setPlaybackRate(1.5);
-        });
-
-        document.getElementById('prc-rate-2').addEventListener('click', function() {
-            me.setPlaybackRate(2.0);
-        });
-    },
-
-    updatePlaybackRate: function() {
-        var me = this;
-
-        chrome.tabs.getSelected(null, function(tab) {
-            var options = {
-                type: "prc-set-playback-rate",
-                newPlaybackRate: me.playbackRate
-            };
-
-            chrome.tabs.sendMessage(tab.id, options, function(response) {
-                if (response.status === 'success') {
-                    me.playbackRate = response.playbackRate;
-                    me.renderRate();
-                }
-            });
-        });
-    },
-
-    faster: function() {
-        var me = this;
-
-        if (me.playbackRate < me.MAX_PLAYBACK_RATE) {
-            me.playbackRate = Math.round((me.playbackRate + me.PLAYBACK_RATE_STEP) * 10) / 10.0;
-
-            me.updatePlaybackRate()
+function updatePlaybackRate() {
+    chrome.tabs.getSelected(null, function(tab) {
+        const options = {
+            type: "prc-set-playback-rate",
+            newPlaybackRate: playbackRate,
         }
-    },
 
-    slower: function() {
-        var me = this;
-
-        if (me.playbackRate > me.MIN_PLAYBACK_RATE) {
-            me.playbackRate = Math.round((me.playbackRate - me.PLAYBACK_RATE_STEP) * 10) / 10.0;
-
-            me.updatePlaybackRate()
-        }
-    },
-
-    setPlaybackRate: function(newPlaybackRate) {
-        var me = this;
-
-        me.playbackRate = newPlaybackRate;
-        me.updatePlaybackRate();
-    },
-
-    checkForPlaybackResources: function() {
-        var me = this;
-
-        me.reset();
-        me.showNoContentMessage();
-
-        chrome.tabs.getSelected(null, function(tab) {
-            chrome.tabs.sendMessage(tab.id, { type: "prc-get-summary" }, function(response) {
-                if (response && response.status === 'success') {
-                    me.playbackRate = response.playbackRate;
-                    me.showContent();
-                    me.renderRate();
-                }
-            });
+        chrome.tabs.sendMessage(tab.id, options, function(response) {
+            if (response.status === 'success') {
+                playbackRate = response.playbackRate
+                renderRate()
+                setSRateSlider()
+            }
         });
-    },
+    });
+}
 
-    init: function() {
-        var me = this;
-
-        me.checkForPlaybackResources();
-        me.addCallbacks();
+function faster() {
+    if (playbackRate < MAX_PLAYBACK_RATE) {
+        playbackRate = Math.round((playbackRate + PLAYBACK_RATE_STEP) * 10) / 10.0
+        updatePlaybackRate()
     }
-};
+}
 
-document.addEventListener('DOMContentLoaded', PRCPopup.init.bind(PRCPopup));
+function slower() {
+    if (playbackRate > MIN_PLAYBACK_RATE) {
+        playbackRate = Math.round((playbackRate - PLAYBACK_RATE_STEP) * 10) / 10.0
+        updatePlaybackRate()
+    }
+}
+
+function setPlaybackRate(newPlaybackRate) {
+    playbackRate = newPlaybackRate
+    updatePlaybackRate()
+}
+
+function checkForPlaybackResources() {
+    reset()
+    showNoContentMessage()
+
+    chrome.tabs.getSelected(null, function(tab) {
+        chrome.tabs.sendMessage(tab.id, { type: "prc-get-summary" }, function(response) {
+            if (response && response.status === 'success') {
+                playbackRate = response.playbackRate
+                showContent()
+                renderRate()
+                setSRateSlider()
+            }
+        })
+    })
+}
+
+function init() {
+    checkForPlaybackResources()
+    addCallbacks()
+}
+
+
+document.addEventListener('DOMContentLoaded', init)

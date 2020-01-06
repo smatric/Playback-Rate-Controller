@@ -1,12 +1,12 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
     <title>Playback Rate Controller's Popup</title>
     <style>
         body {
             font-size: 16px;
             width: 170px;
-            height: 135px;
+            height: 170px;
             overflow: hidden;
             padding: 10px 5px;
         }
@@ -37,7 +37,7 @@
             background: #eee;
         }
         .prc-control-btn:focus {
-            outline: -webkit-focus-ring-color auto 0px;
+            outline: -webkit-focus-ring-color auto 0;
         }
         .prc-control-faster-slower-btn {
             height: 40px;
@@ -49,7 +49,7 @@
             color: white;
             font-family: "Lucida Console", Monaco, monospace;
         }
-        .prc-control-faster-slower-btn > span{
+        .prc-control-faster-slower-btn > span {
             position: relative;
             top: -2px;
         }
@@ -113,6 +113,12 @@
         .prc-short-message .icon-wondering {
             margin-bottom: 10px;
         }
+        .prc-controls-slider {
+            padding-top: 15px;
+        }
+        .prc-controls-slider input {
+            width: 100%;
+        }
     </style>
 
     <script src="popup.js"></script>
@@ -142,7 +148,7 @@
                 <span id="prc-rate" class="prc-control-rate"></span><br>
                 <span class="prc-control-rate-label">Playback Rate</span>
             </div>
-            <div class="prc-top-controls-slower">
+            <div class="prc-top-controls-faster">
                 <button id="prc-faster" class="prc-control-btn prc-control-faster-slower-btn" autofocus><span>+</span></button>
             </div>
         </div>
@@ -167,6 +173,10 @@
                     <button id="prc-rate-2" class="prc-control-btn prc-control-rate-btn"> 2.0x </button>
                 </div>
             </div>
+        </div>
+
+        <div class="prc-controls-slider">
+            <input id="prc-rate-slider" type="range" min="0.1" max="12" value="1" step=".1">
         </div>
     </div>
 </body>
