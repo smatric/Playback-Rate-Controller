@@ -1,56 +1,56 @@
 function getVideoElements() {
-    return [].slice.call(document.getElementsByTagName('video'));
+    return [].slice.call(document.getElementsByTagName('video'))
 }
 
 function getAudioElements() {
-    return [].slice.call(document.getElementsByTagName('audio'));
+    return [].slice.call(document.getElementsByTagName('audio'))
 }
 
 function summary(sendResponse) {
-    var videos = getVideoElements();
-    var audios = getAudioElements();
-    var playbackRate = null;
+    var videos = getVideoElements()
+    var audios = getAudioElements()
+    var playbackRate = null
 
     if (videos.length > 0) {
-        playbackRate = videos[0].playbackRate;
+        playbackRate = videos[0].playbackRate
     }
     else if (audios.length > 0) {
-        playbackRate = audios[0].playbackRate;
+        playbackRate = audios[0].playbackRate
     }
 
     if (playbackRate !== null) {
         sendResponse({
             status: "success",
-            playbackRate: playbackRate
-        });
+            playbackRate: playbackRate,
+        })
     }
 }
 
 function setElementPlaybackRate(el, newPlaybackRate) {
-    el.playbackRate = newPlaybackRate;
+    el.playbackRate = newPlaybackRate
 }
 
 function setPlaybackRate(request, sendResponse) {
-    var videos = getVideoElements();
-    var audios = getAudioElements();
-    var newPlaybackRate = request.newPlaybackRate;
+    var videos = getVideoElements()
+    var audios = getAudioElements()
+    var newPlaybackRate = request.newPlaybackRate
 
     videos.forEach(function(video) {
-        setElementPlaybackRate(video, newPlaybackRate);
+        setElementPlaybackRate(video, newPlaybackRate)
     });
 
     audios.forEach(function(audio) {
-        setElementPlaybackRate(audio, newPlaybackRate);
+        setElementPlaybackRate(audio, newPlaybackRate)
     });
 
-    summary(sendResponse);
+    summary(sendResponse)
 }
 
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
     if (request.type === 'prc-get-summary') {
-        summary(sendResponse);
+        summary(sendResponse)
     }
     else if (request.type === 'prc-set-playback-rate') {
-        setPlaybackRate(request, sendResponse);
+        setPlaybackRate(request, sendResponse)
     }
-});
+})

@@ -1,8 +1,16 @@
-const MAX_PLAYBACK_RATE = 64.0
+const MAX_PLAYBACK_RATE = 16.0
 const MIN_PLAYBACK_RATE = 0.1
-const PLAYBACK_RATE_STEP = 0.1
 const SHOW_DECIMAL_PLACES = 1
 const CSS_CLASS_HIDDEN = 'hidden'
+
+const PLAYBACK_STEPS = {
+    0: 0.1,
+    1.9: 0.2,
+    2.9: 0.5,
+    4.9: 1,
+    9.9: 2,
+}
+const PLAYBACK_THRESHOLDS = Object.keys(PLAYBACK_STEPS).map(Number).sort((a,b) => a-b)
 
 let playbackRate = null
 
@@ -74,18 +82,24 @@ function updatePlaybackRate() {
     });
 }
 
+function getPaybackRateStep() {
+    return PLAYBACK_STEPS[PLAYBACK_THRESHOLDS.find((_, i, arr) =>
+        playbackRate >= arr[i] && (i+1 === arr.length || playbackRate <= arr[i+1])
+    )]
+}
+
 function faster() {
-    if (playbackRate < MAX_PLAYBACK_RATE) {
-        playbackRate = Math.round((playbackRate + PLAYBACK_RATE_STEP) * 10) / 10.0
-        updatePlaybackRate()
-    }
+    if (playbackRate >= MAX_PLAYBACK_RATE) return
+
+    playbackRate = Math.round((playbackRate + getPaybackRateStep()) * 10) / 10.0
+    updatePlaybackRate()
 }
 
 function slower() {
-    if (playbackRate > MIN_PLAYBACK_RATE) {
-        playbackRate = Math.round((playbackRate - PLAYBACK_RATE_STEP) * 10) / 10.0
-        updatePlaybackRate()
-    }
+    if (playbackRate <= MIN_PLAYBACK_RATE) return
+
+    playbackRate = Math.round((playbackRate - getPaybackRateStep()) * 10) / 10.0
+    updatePlaybackRate()
 }
 
 function setPlaybackRate(newPlaybackRate) {
