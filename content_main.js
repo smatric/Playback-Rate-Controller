@@ -37,16 +37,16 @@ function setPlaybackRate(request, sendResponse) {
 
     videos.forEach(function(video) {
         setElementPlaybackRate(video, newPlaybackRate)
-    });
+    })
 
     audios.forEach(function(audio) {
         setElementPlaybackRate(audio, newPlaybackRate)
-    });
+    })
 
     summary(sendResponse)
 }
 
-chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     if (request.type === 'prc-get-summary') {
         summary(sendResponse)
     }
