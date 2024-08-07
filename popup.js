@@ -65,8 +65,17 @@ function addCallbacks() {
     document.getElementById('prc-rate-slider').addEventListener('input', e => setPlaybackRate(e.target.value))
 }
 
+async function getActiveTab() {
+    const currentWindow = await chrome.windows.getCurrent()
+    const tabs = await chrome.tabs.query({
+        active: true,
+        windowId: currentWindow.id,
+    })
+    return tabs[0]
+}
+
 function updatePlaybackRate() {
-    chrome.tabs.getSelected(null, function(tab) {
+    getActiveTab().then(tab => {
         const options = {
             type: "prc-set-playback-rate",
             newPlaybackRate: playbackRate,
@@ -78,8 +87,8 @@ function updatePlaybackRate() {
                 renderRate()
                 setSRateSlider()
             }
-        });
-    });
+        })
+    })
 }
 
 function getPaybackRateStep() {
@@ -111,7 +120,7 @@ function checkForPlaybackResources() {
     reset()
     showNoContentMessage()
 
-    chrome.tabs.getSelected(null, function(tab) {
+    getActiveTab().then(tab => {
         chrome.tabs.sendMessage(tab.id, { type: "prc-get-summary" }, function(response) {
             if (response && response.status === 'success') {
                 playbackRate = response.playbackRate
