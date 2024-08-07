@@ -13,8 +13,7 @@ function summary(sendResponse) {
 
     if (videos.length > 0) {
         playbackRate = videos[0].playbackRate
-    }
-    else if (audios.length > 0) {
+    } else if (audios.length > 0) {
         playbackRate = audios[0].playbackRate
     }
 
@@ -35,22 +34,21 @@ function setPlaybackRate(request, sendResponse) {
     var audios = getAudioElements()
     var newPlaybackRate = request.newPlaybackRate
 
-    videos.forEach(function(video) {
+    videos.forEach(function (video) {
         setElementPlaybackRate(video, newPlaybackRate)
     })
 
-    audios.forEach(function(audio) {
+    audios.forEach(function (audio) {
         setElementPlaybackRate(audio, newPlaybackRate)
     })
 
     summary(sendResponse)
 }
 
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     if (request.type === 'prc-get-summary') {
         summary(sendResponse)
-    }
-    else if (request.type === 'prc-set-playback-rate') {
+    } else if (request.type === 'prc-set-playback-rate') {
         setPlaybackRate(request, sendResponse)
     }
 })

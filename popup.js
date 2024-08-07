@@ -10,7 +10,7 @@ const PLAYBACK_STEPS = {
     4.9: 1,
     9.9: 2,
 }
-const PLAYBACK_THRESHOLDS = Object.keys(PLAYBACK_STEPS).map(Number).sort((a,b) => a-b)
+const PLAYBACK_THRESHOLDS = Object.keys(PLAYBACK_STEPS).map(Number).sort((a, b) => a - b)
 
 let playbackRate = null
 
@@ -81,7 +81,7 @@ function updatePlaybackRate() {
             newPlaybackRate: playbackRate,
         }
 
-        chrome.tabs.sendMessage(tab.id, options, function(response) {
+        chrome.tabs.sendMessage(tab.id, options, function (response) {
             if (response.status === 'success') {
                 playbackRate = response.playbackRate
                 renderRate()
@@ -93,7 +93,7 @@ function updatePlaybackRate() {
 
 function getPaybackRateStep() {
     return PLAYBACK_STEPS[PLAYBACK_THRESHOLDS.find((_, i, arr) =>
-        playbackRate >= arr[i] && (i+1 === arr.length || playbackRate <= arr[i+1])
+        playbackRate >= arr[i] && (i + 1 === arr.length || playbackRate <= arr[i + 1]),
     )]
 }
 
@@ -121,7 +121,7 @@ function checkForPlaybackResources() {
     showNoContentMessage()
 
     getActiveTab().then(tab => {
-        chrome.tabs.sendMessage(tab.id, { type: "prc-get-summary" }, function(response) {
+        chrome.tabs.sendMessage(tab.id, {type: "prc-get-summary"}, function (response) {
             if (response && response.status === 'success') {
                 playbackRate = response.playbackRate
                 showContent()
@@ -136,6 +136,5 @@ function init() {
     checkForPlaybackResources()
     addCallbacks()
 }
-
 
 document.addEventListener('DOMContentLoaded', init)
