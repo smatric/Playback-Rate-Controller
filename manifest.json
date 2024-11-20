@@ -3,7 +3,7 @@
   "name": "Playback Rate Controller",
   "short_name": "PRC",
   "description": "Take control over video playback speed! Change video/audio playback rates of HTML5 media including YouTube videos.",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "icons": {
     "16": "icon-16x16.png",
     "48": "icon-48x48.png",
@@ -13,9 +13,6 @@
     "default_icon": "icon-48x48.png",
     "default_popup": "popup.html"
   },
-  "permissions": [
-    "activeTab"
-  ],
   "host_permissions": [
     "http://*/*",
     "https://*/*"
