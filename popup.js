@@ -51,7 +51,7 @@ function setSRateSlider() {
 }
 
 function formatRate(rate) {
-    return rate.toFixed(SHOW_DECIMAL_PLACES) + 'x'
+    return rate.toFixed(SHOW_DECIMAL_PLACES) + '×'
 }
 
 function addCallbacks() {
