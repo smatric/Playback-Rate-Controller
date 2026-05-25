@@ -1,9 +1,21 @@
+function getMediaElements(tagName, root) {
+    root = root || document
+    var results = [].slice.call(root.querySelectorAll(tagName))
+    var all = root.querySelectorAll('*')
+    for (var i = 0; i < all.length; i++) {
+        if (all[i].shadowRoot) {
+            results = results.concat(getMediaElements(tagName, all[i].shadowRoot))
+        }
+    }
+    return results
+}
+
 function getVideoElements() {
-    return [].slice.call(document.getElementsByTagName('video'))
+    return getMediaElements('video')
 }
 
 function getAudioElements() {
-    return [].slice.call(document.getElementsByTagName('audio'))
+    return getMediaElements('audio')
 }
 
 function summary(sendResponse) {
