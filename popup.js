@@ -54,6 +54,24 @@ function formatRate(rate) {
     return rate.toFixed(SHOW_DECIMAL_PLACES) + '×'
 }
 
+function formatBadge(rate) {
+    return parseFloat(rate.toFixed(1)).toString()
+}
+
+function getAccentColor() {
+    return getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()
+}
+
+function setBadge(tabId, rate) {
+    const text = rate === 1 ? '' : formatBadge(rate)
+    chrome.action.setBadgeText({ tabId: tabId, text: text })
+    if (text) chrome.action.setBadgeBackgroundColor({ tabId: tabId, color: getAccentColor() })
+}
+
+function clearBadge(tabId) {
+    chrome.action.setBadgeText({ tabId: tabId, text: '' })
+}
+
 function addCallbacks() {
     document.getElementById('prc-slower').addEventListener('click', slower)
     document.getElementById('prc-faster').addEventListener('click', faster)
@@ -86,6 +104,7 @@ function updatePlaybackRate() {
                 playbackRate = response.playbackRate
                 renderRate()
                 setSRateSlider()
+                setBadge(tab.id, playbackRate)
             }
         })
     })
@@ -127,6 +146,9 @@ function checkForPlaybackResources() {
                 showContent()
                 renderRate()
                 setSRateSlider()
+                setBadge(tab.id, playbackRate)
+            } else {
+                clearBadge(tab.id)
             }
         })
     })
