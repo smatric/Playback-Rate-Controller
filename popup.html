@@ -110,18 +110,10 @@
 
         /* Preset rate buttons */
         .prc-extra-controls {
-            display: flex;
-            gap: 5px;
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 7px;
             margin-bottom: 14px;
-        }
-        .prc-extra-controls-slow,
-        .prc-extra-controls-fast {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-        .prc-extra-controls-normal {
-            flex: 1;
         }
         .prc-control-rate-btn {
             border-radius: 20px;
@@ -143,8 +135,10 @@
         .prc-control-rate-btn:focus {
             outline: none;
         }
-        #prc-rate-1 {
-            height: 100%;
+        .prc-control-rate-btn--center {
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-size: 18px;
         }
 
@@ -201,19 +195,7 @@
             <button id="prc-faster" class="prc-control-btn prc-control-faster-slower-btn" autofocus><span>+</span></button>
         </div>
 
-        <div class="prc-extra-controls">
-            <div class="prc-extra-controls-slow">
-                <button id="prc-rate-05" class="prc-control-btn prc-control-rate-btn">0.5</button>
-                <button id="prc-rate-08" class="prc-control-btn prc-control-rate-btn">0.8</button>
-            </div>
-            <div class="prc-extra-controls-normal">
-                <button id="prc-rate-1" class="prc-control-btn prc-control-rate-btn">1</button>
-            </div>
-            <div class="prc-extra-controls-fast">
-                <button id="prc-rate-15" class="prc-control-btn prc-control-rate-btn">1.5</button>
-                <button id="prc-rate-2" class="prc-control-btn prc-control-rate-btn">2</button>
-            </div>
-        </div>
+        <div class="prc-extra-controls" id="prc-extra-controls"></div>
 
         <div class="prc-controls-slider">
             <input id="prc-rate-slider" type="range" min="0.1" max="6" value="1" step=".1">

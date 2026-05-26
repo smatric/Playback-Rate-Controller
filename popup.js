@@ -3,6 +3,13 @@ const MIN_PLAYBACK_RATE = 0.1
 const SHOW_DECIMAL_PLACES = 1
 const CSS_CLASS_HIDDEN = 'hidden'
 
+const SETTINGS_DEFAULTS = {
+    layout: '2rows',
+    speeds: [0.5, 1.0, 1.5, 0.8, 2.0, 0.9, 2.5],
+}
+
+const LAYOUT_ROWS = { '1row': 1, '2rows': 2, '3rows': 3 }
+
 const PLAYBACK_STEPS = {
     0: 0.1,
     1.9: 0.2,
@@ -42,6 +49,49 @@ function showNoContentMessage() {
     hideEl(contentEl)
 }
 
+function getButtonDefs(layout) {
+    var rows = LAYOUT_ROWS[layout] || 2
+    var defs = [
+        { index: 0, col: 1, row: 1, rowSpan: 1 },
+        { index: 1, col: 2, row: 1, rowSpan: rows, isCenter: true },
+        { index: 2, col: 3, row: 1, rowSpan: 1 },
+    ]
+    if (rows >= 2) {
+        defs.push({ index: 3, col: 1, row: 2, rowSpan: 1 })
+        defs.push({ index: 4, col: 3, row: 2, rowSpan: 1 })
+    }
+    if (rows >= 3) {
+        defs.push({ index: 5, col: 1, row: 3, rowSpan: 1 })
+        defs.push({ index: 6, col: 3, row: 3, rowSpan: 1 })
+    }
+    return defs
+}
+
+function renderButtons(layout, speeds) {
+    var container = document.getElementById('prc-extra-controls')
+    container.innerHTML = ''
+
+    getButtonDefs(layout).forEach(function (def) {
+        var btn = document.createElement('button')
+        btn.className = 'prc-control-btn prc-control-rate-btn'
+        if (def.isCenter) btn.classList.add('prc-control-rate-btn--center')
+        btn.textContent = speeds[def.index]
+        btn.dataset.rate = speeds[def.index]
+        btn.style.gridColumn = def.col
+        btn.style.gridRow = def.rowSpan > 1 ? (def.row + ' / span ' + def.rowSpan) : def.row
+        container.appendChild(btn)
+    })
+}
+
+function loadConfig() {
+    return new Promise(function (resolve) {
+        chrome.storage.sync.get(SETTINGS_DEFAULTS, function (data) {
+            renderButtons(data.layout, data.speeds)
+            resolve()
+        })
+    })
+}
+
 function renderRate() {
     document.getElementById('prc-rate').innerHTML = formatRate(playbackRate)
 }
@@ -75,12 +125,15 @@ function clearBadge(tabId) {
 function addCallbacks() {
     document.getElementById('prc-slower').addEventListener('click', slower)
     document.getElementById('prc-faster').addEventListener('click', faster)
-    document.getElementById('prc-rate-05').addEventListener('click', () => setPlaybackRate(0.5))
-    document.getElementById('prc-rate-08').addEventListener('click', () => setPlaybackRate(0.8))
-    document.getElementById('prc-rate-1').addEventListener('click', () => setPlaybackRate(1.0))
-    document.getElementById('prc-rate-15').addEventListener('click', () => setPlaybackRate(1.5))
-    document.getElementById('prc-rate-2').addEventListener('click', () => setPlaybackRate(2.0))
-    document.getElementById('prc-rate-slider').addEventListener('input', e => setPlaybackRate(e.target.value))
+    document.getElementById('prc-rate-slider').addEventListener('input', function (e) {
+        setPlaybackRate(parseFloat(e.target.value))
+    })
+
+    // Single delegated handler covers all preset buttons in any layout
+    document.getElementById('prc-extra-controls').addEventListener('click', function (e) {
+        var btn = e.target.closest('[data-rate]')
+        if (btn) setPlaybackRate(parseFloat(btn.dataset.rate))
+    })
 }
 
 async function getActiveTab() {
@@ -100,6 +153,7 @@ function updatePlaybackRate() {
         }
 
         chrome.tabs.sendMessage(tab.id, options, function (response) {
+            if (chrome.runtime.lastError || !response) return
             if (response.status === 'success') {
                 playbackRate = response.playbackRate
                 renderRate()
@@ -141,7 +195,11 @@ function checkForPlaybackResources() {
 
     getActiveTab().then(tab => {
         chrome.tabs.sendMessage(tab.id, {type: "prc-get-summary"}, function (response) {
-            if (response && response.status === 'success') {
+            if (chrome.runtime.lastError || !response) {
+                clearBadge(tab.id)
+                return
+            }
+            if (response.status === 'success') {
                 playbackRate = response.playbackRate
                 showContent()
                 renderRate()
@@ -154,9 +212,10 @@ function checkForPlaybackResources() {
     })
 }
 
-function init() {
-    checkForPlaybackResources()
+async function init() {
+    await loadConfig()
     addCallbacks()
+    checkForPlaybackResources()
 }
 
 document.addEventListener('DOMContentLoaded', init)

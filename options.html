@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Playback Rate Controller — Settings</title>
+    <style>
+        :root {
+            --accent: #264c9e;
+        }
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 28px 24px 36px;
+            background: #fff;
+            color: #1a1a2e;
+            max-width: 480px;
+        }
+        h1 {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--accent);
+            margin: 0 0 28px;
+            letter-spacing: -0.01em;
+        }
+        .section {
+            margin-bottom: 28px;
+        }
+        .section-label {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: color-mix(in srgb, var(--accent) 55%, white);
+            margin-bottom: 10px;
+        }
+
+        /* Layout cards */
+        .layout-cards {
+            display: flex;
+            gap: 8px;
+        }
+        .layout-card {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 8px;
+            border: 1.5px solid color-mix(in srgb, var(--accent) 25%, white);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: border-color 0.15s, background 0.15s;
+            user-select: none;
+        }
+        .layout-card:hover {
+            border-color: color-mix(in srgb, var(--accent) 50%, white);
+            background: color-mix(in srgb, var(--accent) 4%, white);
+        }
+        .layout-card:has(input:checked) {
+            border-color: var(--accent);
+            background: color-mix(in srgb, var(--accent) 8%, white);
+        }
+        .layout-card input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+        .preview-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 16px);
+            gap: 3px;
+        }
+        .preview-block {
+            border-radius: 3px;
+            background: color-mix(in srgb, var(--accent) 30%, white);
+        }
+        .layout-card:has(input:checked) .preview-block {
+            background: var(--accent);
+        }
+        .layout-card-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        /* Speed grid */
+        .speed-section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .save-status {
+            font-size: 11px;
+            font-weight: 600;
+            color: #2a9d4e;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .save-status.visible {
+            opacity: 1;
+        }
+        .speed-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 6px;
+        }
+        .speed-cell {
+            /* height set by JS */
+        }
+        .speed-input {
+            display: block;
+            width: 100%;
+            height: 100%;
+            min-height: 42px;
+            border-radius: 20px;
+            border: 1.5px solid color-mix(in srgb, var(--accent) 35%, white);
+            background: color-mix(in srgb, var(--accent) 12%, white);
+            color: var(--accent);
+            font-family: inherit;
+            font-size: 12px;
+            font-weight: 600;
+            text-align: center;
+            padding: 0 6px;
+            cursor: text;
+            transition: border-color 0.15s, background 0.15s;
+            -moz-appearance: textfield;
+        }
+        .speed-input::-webkit-outer-spin-button,
+        .speed-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+        }
+        .speed-input:hover {
+            border-color: color-mix(in srgb, var(--accent) 55%, white);
+        }
+        .speed-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: color-mix(in srgb, var(--accent) 18%, white);
+        }
+        .speed-input--center {
+            font-size: 18px;
+        }
+
+        /* Reset button */
+        .reset-btn {
+            font-family: inherit;
+            font-size: 12px;
+            font-weight: 600;
+            color: color-mix(in srgb, var(--accent) 65%, white);
+            background: none;
+            border: 1.5px solid color-mix(in srgb, var(--accent) 25%, white);
+            border-radius: 20px;
+            padding: 8px 16px;
+            cursor: pointer;
+            transition: border-color 0.15s, color 0.15s;
+        }
+        .reset-btn:hover {
+            border-color: color-mix(in srgb, var(--accent) 55%, white);
+            color: var(--accent);
+        }
+        .reset-btn:focus {
+            outline: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Settings</h1>
+
+    <div class="section">
+        <div class="section-label">Layout</div>
+        <div class="layout-cards" id="layout-cards"></div>
+    </div>
+
+    <div class="section">
+        <div class="speed-section-header">
+            <div class="section-label" style="margin-bottom: 0">Button speeds</div>
+            <div class="save-status" id="save-status">Saved ✓</div>
+        </div>
+        <div class="speed-grid" id="speed-grid"></div>
+    </div>
+
+    <div class="section">
+        <button id="reset-btn" class="reset-btn">Reset to defaults</button>
+    </div>
+
+    <script src="options.js"></script>
+</body>
+</html>
