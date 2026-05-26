@@ -129,6 +129,10 @@ function addCallbacks() {
         setPlaybackRate(parseFloat(e.target.value))
     })
 
+    document.getElementById('prc-open-settings').addEventListener('click', function () {
+        chrome.runtime.openOptionsPage()
+    })
+
     // Single delegated handler covers all preset buttons in any layout
     document.getElementById('prc-extra-controls').addEventListener('click', function (e) {
         var btn = e.target.closest('[data-rate]')

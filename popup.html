@@ -70,6 +70,16 @@
             letter-spacing: 0.06em;
             color: color-mix(in srgb, var(--accent) 55%, white);
             margin-top: 4px;
+            background: none;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: inherit;
+            transition: color 0.15s;
+        }
+        .prc-control-rate-label:hover {
+            color: var(--accent);
         }
 
         /* +/- buttons */
@@ -190,7 +200,7 @@
             <button id="prc-slower" class="prc-control-btn prc-control-faster-slower-btn"><span>−</span></button>
             <div class="prc-top-controls-rate">
                 <span id="prc-rate" class="prc-control-rate"></span>
-                <span class="prc-control-rate-label">Playback Rate</span>
+                <button class="prc-control-rate-label" id="prc-open-settings">Settings</button>
             </div>
             <button id="prc-faster" class="prc-control-btn prc-control-faster-slower-btn" autofocus><span>+</span></button>
         </div>
