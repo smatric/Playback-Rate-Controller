@@ -1,16 +1,17 @@
 VERSION := $(shell python3 -c "import json; print(json.load(open('manifest.json'))['version'])")
 ZIP = playback-rate-controller-$(VERSION).zip
-FILES = content_main.js popup.js popup.html manifest.json icon-16x16.png icon-48x48.png icon-128x128.png
+EXCLUDE = '*.zip' '.git/*' '.idea/*' '.claude/*' '*/.DS_Store' '.DS_Store' 'Makefile' 'README.md'
 
 .PHONY: all pack clean
 
 all: pack
 
-pack: $(ZIP)
-
-$(ZIP): $(FILES)
-	zip $(ZIP) $(FILES)
+pack:
+	rm -f $(ZIP)
+	zip -r $(ZIP) . -x $(EXCLUDE)
 	@echo "Created $(ZIP)"
+	@echo "Contents:"
+	@unzip -l $(ZIP)
 
 clean:
 	rm -f playback-rate-controller-*.zip
