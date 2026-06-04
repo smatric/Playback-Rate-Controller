@@ -1,0 +1,8 @@
+# Build artifacts
+playback-rate-controller-*.zip
+
+# IDE
+.idea/
+
+# macOS
+.DS_Store
